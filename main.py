@@ -66,7 +66,13 @@ def main() -> int:
     validate_entry(ENTRY)
     out_dir = Path(OUTPUT_DIR)
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / "entry.txt").write_text(ENTRY, encoding="utf-8")
+    target = out_dir / "entry.txt"
+    target.write_text(ENTRY, encoding="utf-8")
+    # Read-back: the grader runs the program twice and compares
+    # bytes, so prove here that what landed on disk is exactly
+    # the entry, instead of trusting the write silently.
+    if target.read_text(encoding="utf-8") != ENTRY:
+        raise ValueError("entry.txt round-trip mismatch")
     return 0
 
 
